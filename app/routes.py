@@ -88,6 +88,19 @@ def registration():
         return jsonify(message='Неверные учетные данные'), 401
 
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    if not data:
+        return "Bad request"
+
+    user = db.getUserByLoginPassword(data)
+    if user:
+        return jsonify(id=user[0], username=user[1], email=user[3], photo=user[4], role=user[5]), 200
+    else:
+        return jsonify(message='Неверные учетные данные'), 401
+
+
 @app.route('/followToUser', methods=["POST"])
 def followToUser():
     data = request.get_json()
@@ -181,3 +194,25 @@ def eventMembers():
         }
         resList.append(dict)
     return resList
+
+
+@app.route('/usersWithoutFriend', methods=["GET"])
+def usersWithoutFriend():
+    data = request.get_json()
+    if not data:
+        return jsonify("Missing data"), 400
+    userid = data.get('userid')
+    users = db.usersWithoutFriend(userid)
+    if not users:
+        return jsonify("Людей, кроме друзей, нет"), 400
+    usersDict = []
+    for user in users:
+        dict = {
+            'id': user[0],
+            'username': user[1],
+            'photo': user[2],
+            'role': user[3]
+        }
+        usersDict.append(dict)
+
+    return usersDict

@@ -210,3 +210,43 @@ class DBInterface:
                 print('пользователи в данном мероприятии не найдены')
                 return None
             return result
+
+    @staticmethod
+    def getUserByLoginPassword(data):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME,
+                             port=Config.DB_PORT) as con:
+
+            cur = con.cursor()
+
+            username = data.get("username")
+            password = data.get("password")
+
+            cur.execute('SELECT * FROM "User" WHERE username = %s', (username,))
+
+            user = cur.fetchone()
+
+            if not user:
+                print('Пользователь не найден')
+                return None
+
+            if not check_password_hash(user[2], password):
+                print('Неверный пароль')
+                return None
+
+            return user
+
+    @staticmethod
+    def usersWithoutFriend(id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute(
+                "SELECT id,username,photo,role FROM \"User\" WHERE id NOT IN ( SELECT friendid FROM usersfriend WHERE userid = %s) AND id != %s",
+                (id, id))
+            users = cur.fetchall()
+            return users
