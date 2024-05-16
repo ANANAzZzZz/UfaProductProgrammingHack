@@ -283,3 +283,14 @@ class DBInterface:
             if not raiting:
                 return 0
             return raiting[0]
+
+    @staticmethod
+    def get_user_by_id(id):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM  \"User\" WHERE id = %s", (id,))
+            user = cur.fetchone()
+            return user

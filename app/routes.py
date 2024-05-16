@@ -267,17 +267,17 @@ def notOfficialRankFromDuel():
         return jsonify(res1, res2)
 
 
-@app.route('/getProfile', methods=["GET"])
+@app.route('/getProfile')
 def getProfile():
-    data = request.get_json()
+    data = request.args.get("userId")
     if not data:
         return jsonify("Missing data"), 400
-    idUser = data.get('id')
+    userId = request.args.get("userId")
 
-    user = db.get_user_by_id(idUser)
+    user = db.get_user_by_id(userId)
     if not user:
         return jsonify("Пользователь не найден"), 400
-    return jsonify(user)
+    return jsonify(userId=user[0], username=user[1], email=user[3], photo=user[4], role=user[5]), 200
 
 
 @app.route('/getUserNotOfficialElo', methods=["POST"])
