@@ -14,7 +14,7 @@ def retNews():
     news = db.getNews()
 
     if not news:
-        return []  # "No avaliable tracks"
+        return []
 
     newsList = []
     for el in news:
@@ -81,8 +81,49 @@ def registration():
     user = db.find_user_by_username(username)
     if user:
         return jsonify("A user with such name already exists")
-    user = db.add_user(username,  generate_password_hash(password), mail, role, photo)
+    user = db.add_user(username, generate_password_hash(password), mail, role, photo)
     if user:
         return jsonify(message='Вы успешно добавлены'), 200
     else:
         return jsonify(message='Неверные учетные данные'), 401
+
+
+@app.route('/followToUser', methods=["POST"])
+def followToUser():
+    data = request.get_json()
+    if not data:
+        return jsonify("Missing data"), 400
+    userid = data.get('userid')
+    friendid = data.get('friendid')
+
+    db.add_invitation_to_db(userid, friendid)
+    return jsonify(message='успешно подписались!'), 200
+
+
+@app.route('/duels', methods=["GET", "POST"])
+def duels():
+    if request.method == "GET":
+        duels = db.getDuels()
+
+        if not duels:
+            return []
+
+        duelsList = []
+        for el in duels:
+            dict = {
+                'id': el[0],
+                'creatorId': el[1],
+                'name': el[2],
+                'description': el[3],
+                'password': el[4],
+                'playground': el[5],
+                'type': el[6],
+                'isOfficially': el[7],
+                'PlayersCount': el[8]
+            }
+            duelsList.append(dict)
+        return duelsList
+
+    if request.method == "POST":
+        data = request.get_json()
+

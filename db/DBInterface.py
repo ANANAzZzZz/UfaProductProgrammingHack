@@ -62,10 +62,10 @@ class DBInterface:
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
-            cur.execute("INSERT INTO \"User\" (username, password, email, role, photo) VALUES (%s, %s, %s, %s, %s) RETURNING username",
-                        (username, password, email, role, photo))
+            cur.execute(
+                "INSERT INTO \"User\" (username, password, email, role, photo) VALUES (%s, %s, %s, %s, %s) RETURNING username",
+                (username, password, email, role, photo))
             result = cur.fetchone()
             con.commit()
             if not result:
@@ -78,7 +78,6 @@ class DBInterface:
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
             cur.execute("SELECT * FROM \"User\" WHERE username = %s", (username,))
             result = cur.fetchone()
@@ -92,7 +91,6 @@ class DBInterface:
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
             cur.execute("SELECT id FROM  \"User\" WHERE username = %s", (username,))
             user_id = cur.fetchone()
@@ -104,7 +102,6 @@ class DBInterface:
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
-
             cur = con.cursor()
             cur.execute("SELECT * FROM \"User\" WHERE email = %s", (email,))
             result = cur.fetchone()
@@ -112,5 +109,29 @@ class DBInterface:
                 return None
             return result
 
+    @staticmethod
+    def getDuels():
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
 
+            cur.execute('SELECT * FROM "Event"')
 
+            result = cur.fetchall()
+
+            if not result:
+                print('Duels not found')
+                return None
+            return result
+
+    def add_invitation_to_db(self, username, friendname):
+        user_id = self.get_user_id(username)[0]
+        friend_id = self.get_user_id(friendname)[0]
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute("INSERT INTO usersfriend (userid, friendid) VALUES(%s, %s)", (user_id, friend_id))
