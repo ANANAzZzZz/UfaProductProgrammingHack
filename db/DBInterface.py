@@ -1,6 +1,6 @@
 import psycopg
 from config import Config
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class DBInterface:
@@ -135,3 +135,31 @@ class DBInterface:
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
             cur.execute("INSERT INTO usersfriend (userid, friendid) VALUES(%s, %s)", (user_id, friend_id))
+
+    @staticmethod
+    def addDuels(data):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            if not data:
+                print("Неверные параметры")
+                return None
+
+            creatorId = data.get("creatorId")
+            name = data.get("name")
+            description = data.get("description")
+            hashPassword = generate_password_hash(data.get("password"))
+            playgroundId = data.get("playgroundId")
+            type = data.get("type")
+            isOfficially = data.get("isOfficially")
+            playersCount = data.get("playersCount")
+
+            cur.execute('INSERT INTO "Event"(creatorid, name, description, password, playgroundid, type,'
+                        ' isoficially, playerscount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                        (creatorId, name, description, hashPassword, playgroundId, type, isOfficially, playersCount))
+
+            print("Дуэль добавлена")
+            return True

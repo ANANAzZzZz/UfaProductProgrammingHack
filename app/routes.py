@@ -127,3 +127,7 @@ def duels():
     if request.method == "POST":
         data = request.get_json()
 
+        if db.addDuels(data):
+            return jsonify(message='Дуэль успешно добавлена'), 200
+        else:
+            return jsonify(message='При добавлении произошла ошибка'), 400
