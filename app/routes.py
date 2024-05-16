@@ -24,3 +24,5 @@ def retNews():
         }
         newsList.append(dict)
     return newsList
+
+
