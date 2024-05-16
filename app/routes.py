@@ -1,4 +1,6 @@
 import flask
+from flask import request
+
 from app import app, db
 
 
@@ -42,3 +44,21 @@ def retPlaygrounds():
         }
         playgroundList.append(dict)
     return playgroundList
+
+
+@app.route('/friends')
+def retFriends():
+    userId = request.args.get('userId')
+
+    friends = db.getFriendsById(userId)
+
+    if not friends:
+        return []
+
+    friendsList = []
+    for el in friends:
+        dict = {
+            'friendId': el[0]
+        }
+        friendsList.append(dict)
+    return friendsList
