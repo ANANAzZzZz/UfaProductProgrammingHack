@@ -119,7 +119,7 @@ def duels():
                 'playground': el[5],
                 'type': el[6],
                 'isOfficially': el[7],
-                'PlayersCount': el[8]
+                'playersCount': el[8]
             }
             duelsList.append(dict)
         return duelsList
@@ -131,3 +131,14 @@ def duels():
             return jsonify(message='Дуэль успешно добавлена'), 200
         else:
             return jsonify(message='При добавлении произошла ошибка'), 400
+
+
+@app.route('/takePartInEvent', methods=["POST"])
+def takePartInEvent():
+    data = request.get_json()
+
+    if not data:
+        return jsonify("Missing data"), 400
+
+    db.addUserInEvent(data)
+    return jsonify(message='Участие пользователя успешно обработано'), 200

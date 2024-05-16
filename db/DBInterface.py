@@ -163,3 +163,21 @@ class DBInterface:
 
             print("Дуэль добавлена")
             return True
+
+    @staticmethod
+    def addUserInEvent(data):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            userId = data.get("userId")
+            eventId = data.get("eventId")
+
+            cur.execute('INSERT INTO userinevent(userid, eventid) VALUES (%s, %s)',
+                        (userId, eventId
+                         ))
+
+            print("Участие пользователя успешно обработано")
+            return True
