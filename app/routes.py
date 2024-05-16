@@ -6,7 +6,7 @@ from app import app, db
 
 @app.route('/')
 def index():
-    return 'Index Page'
+    return 'Last edit - 23:07'
 
 
 @app.route('/news')
@@ -76,6 +76,7 @@ def registration():
     role = data.get('role')
     photo = data.get('photo')
     user = db.find_user_by_email(mail)
+
     if user:
         return jsonify("A user with such mail already exists")
     user = db.find_user_by_username(username)
@@ -83,7 +84,8 @@ def registration():
         return jsonify("A user with such name already exists")
     user = db.add_user(username, generate_password_hash(password), mail, role, photo)
     if user:
-        return jsonify(message='Вы успешно добавлены'), 200
+        user = db.find_user_by_username(username)
+        return jsonify(id=user[0], username=user[1], email=user[3], photo=user[4], role=user[5]), 200
     else:
         return jsonify(message='Неверные учетные данные'), 401
 
