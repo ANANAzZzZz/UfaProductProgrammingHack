@@ -278,3 +278,16 @@ def getProfile():
     if not user:
         return jsonify("Пользователь не найден"), 400
     return jsonify(user)
+
+
+@app.route('/getUserNotOfficialElo', methods=["POST"])
+def userNotOfficialELo():
+    data = request.get_json()
+    if not data:
+        return jsonify("Missing data"), 400
+    idUser = data.get('userId')
+
+    elo = db.getNotOfficialRaiting(idUser)
+    if not elo:
+        return jsonify(elo=800), 200
+    return jsonify(elo=elo), 200
