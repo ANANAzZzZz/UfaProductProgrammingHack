@@ -6,7 +6,7 @@ from app import app, db
 
 @app.route('/')
 def index():
-    return 'Last edit - 2:05 AM'
+    return 'Last edit - 2:32 AM'
 
 
 @app.route('/news')
