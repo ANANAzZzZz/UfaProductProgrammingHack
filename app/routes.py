@@ -26,3 +26,19 @@ def retNews():
     return newsList
 
 
+@app.route('/playgrounds')
+def retPlaygrounds():
+    playgrounds = db.getPlaygrounds()
+
+    if not playgrounds:
+        return []
+
+    playgroundList = []
+    for el in playgrounds:
+        dict = {
+            'id': el[0],
+            'name': el[1],
+            'geolocation': el[2]
+        }
+        playgroundList.append(dict)
+    return playgroundList

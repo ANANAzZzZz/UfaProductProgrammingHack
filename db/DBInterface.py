@@ -21,3 +21,20 @@ class DBInterface:
                 print('News not found')
                 return None
             return result
+
+    @staticmethod
+    def getPlaygrounds():
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('SELECT * FROM Playground')
+
+            result = cur.fetchall()
+
+            if not result:
+                print('Playgrounds not found')
+                return None
+            return result
