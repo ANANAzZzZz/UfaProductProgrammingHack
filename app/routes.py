@@ -20,6 +20,7 @@ def retNews():
     for el in news:
         dict = {
             'id': el[0],
+
             'userId': el[1],
             'dateStamp': el[2],
             'description': el[3]
@@ -218,3 +219,62 @@ def usersWithoutFriend():
         usersDict.append(dict)
 
     return usersDict
+
+
+@app.route('/notOfficialRankFromDuel', methods=["GET", "POST"])
+def notOfficialRankFromDuel():
+    if request.method == "POST":
+        data = request.get_json()
+        if not data:
+            return jsonify("Missing data"), 400
+        userid1 = data.get('userid1')
+        userid2 = data.get('userid2')
+        raiting_a = int(db.getNotOfficialRaiting(userid1))
+        if raiting_a == 0:
+            raiting_a = db.setNotOfficialRankFromDuelResult(userid1, 800)
+        raiting_b = int(db.getNotOfficialRaiting(userid2))
+        if raiting_b == 0:
+            raiting_b = db.setNotOfficialRankFromDuelResult(userid2, 800)
+        a_is_win = data.get('a_is_win')
+        k = 30
+
+        ea = 1 / (1 + 10 ** ((raiting_b - raiting_a) / 400))
+        eb = 1 / (1 + 10 ** ((raiting_a - raiting_b) / 400))
+
+        b_is_win = 1 - a_is_win
+
+        new_raiting_a = int(raiting_a + k * (a_is_win - ea))
+        new_raiting_b = int(raiting_b + k * (b_is_win - eb))
+
+        db.updateNotOfficialRankFromDuelResult(userid1, new_raiting_a)
+        db.updateNotOfficialRankFromDuelResult(userid2, new_raiting_b)
+
+        return jsonify("Изменения успешно внесены"), 200
+
+    elif request.method == "GET":
+        data = request.get_json()
+        if not data:
+            return jsonify("Missing data"), 400
+        userid1 = data.get('userid1')
+        userid2 = data.get('userid2')
+        res1 = int(db.getNotOfficialRaiting(userid1))
+        if not res1:
+            res1 = 800
+        res2 = int(db.getNotOfficialRaiting(userid2))
+        if not res2:
+            res2 = 800
+
+        return jsonify(res1, res2)
+
+
+@app.route('/getProfile', methods=["GET"])
+def getProfile():
+    data = request.get_json()
+    if not data:
+        return jsonify("Missing data"), 400
+    idUser = data.get('id')
+
+    user = db.get_user_by_id(idUser)
+    if not user:
+        return jsonify("Пользователь не найден"), 400
+    return jsonify(user)

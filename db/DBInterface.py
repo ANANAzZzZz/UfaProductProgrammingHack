@@ -250,3 +250,36 @@ class DBInterface:
                 (id, id))
             users = cur.fetchall()
             return users
+
+    @staticmethod
+    def updateNotOfficialRankFromDuelResult(userid, value):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute('UPDATE "Rank" SET  value = %s  WHERE userid = %s', (value, userid))
+            return True
+
+    @staticmethod
+    def setNotOfficialRankFromDuelResult(userid, value):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute('INSERT INTO "Rank"(userid, value)  VALUES (%s,%s)', (userid, value))
+            return value
+
+    @staticmethod
+    def getNotOfficialRaiting(userid):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute('SELECT "value" FROM "Rank" WHERE userid = %s', (userid,))
+            raiting = cur.fetchone()
+            if not raiting:
+                return 0
+            return raiting[0]
