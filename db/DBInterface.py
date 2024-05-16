@@ -62,3 +62,27 @@ class DBInterface:
             if not result:
                 return None
             return result
+
+    @staticmethod
+    def get_user_id(username):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+
+            cur = con.cursor()
+            cur.execute("SELECT id FROM  \"User\" WHERE username = %s", (username,))
+            user_id = cur.fetchone()
+            return user_id
+
+
+    @staticmethod
+    def getUserAchievement(userid):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute("SELECT id, name, photo FROM achievement WHERE userid = %s", (userid,))
+            achievements = cur.fetchall()
+            return achievements

@@ -8,6 +8,27 @@ def index():
     return 'Index Page'
 
 
+@app.route('/getUserAchievement', methods=["GET"])
+def getUserAchievement():
+    data = request.get_json()
+    if not data:
+        return jsonify("Missing data"), 400
+    userid = data.get('id')
+    achievementList = db.getUserAchievement(userid)
+    if not achievementList:
+        return jsonify("Missing data"), 400
+    achievementDict = []
+    for achievement in achievementList:
+        dict = {
+            'id': achievement[0],
+            'name': achievement[1],
+            'photo': achievement[2]
+        }
+        achievementDict.append(dict)
+
+    return achievementDict
+
+
 @app.route("/registration", methods=["POST"])
 def registration():
     data = request.get_json()
