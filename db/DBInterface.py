@@ -181,3 +181,32 @@ class DBInterface:
 
             print("Участие пользователя успешно обработано")
             return True
+
+    @staticmethod
+    def getUserAchievement(userid):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute("SELECT id, name, photo FROM achievement WHERE userid = %s", (userid,))
+            achievements = cur.fetchall()
+            return achievements
+
+    @staticmethod
+    def getUsersByEvent(eventId):
+        with psycopg.connect(host=Config.DB_SERVER,
+                             user=Config.DB_USER,
+                             password=Config.DB_PASSWORD,
+                             dbname=Config.DB_NAME) as con:
+            cur = con.cursor()
+
+            cur.execute('SELECT userid FROM \"User" INNER JOIN userinevent u on "User".id = u.userid'
+                        ' WHERE eventid = %s', (eventId,))
+
+            result = cur.fetchall()
+
+            if not result:
+                print('пользователи в данном мероприятии не найдены')
+                return None
+            return result
