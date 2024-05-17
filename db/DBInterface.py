@@ -126,15 +126,19 @@ class DBInterface:
                 return None
             return result
 
-    def add_invitation_to_db(self, username, friendname):
-        user_id = self.get_user_id(username)[0]
-        friend_id = self.get_user_id(friendname)[0]
+    def add_invitation_to_db(self, userId, friendId):
         with psycopg.connect(host=Config.DB_SERVER,
                              user=Config.DB_USER,
                              password=Config.DB_PASSWORD,
                              dbname=Config.DB_NAME) as con:
             cur = con.cursor()
-            cur.execute("INSERT INTO usersfriend (userid, friendid) VALUES(%s, %s)", (user_id, friend_id))
+            if userId != None and userId != None:
+                cur.execute("INSERT INTO usersfriend (userid, friendid) VALUES(%s, %s)", (userId, friendId))
+                print("пользователь успешно добавлен")
+                return True
+            else:
+                print("пользователь не найден")
+                return False
 
     @staticmethod
     def addDuels(data):

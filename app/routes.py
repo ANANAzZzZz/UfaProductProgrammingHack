@@ -6,7 +6,7 @@ from app import app, db
 
 @app.route('/')
 def index():
-    return 'Last edit - 2:32 AM'
+    return 'Last edit - 5:30 AM'
 
 
 @app.route('/news')
@@ -109,10 +109,11 @@ def followToUser():
     data = request.get_json()
     if not data:
         return jsonify("Missing data"), 400
-    userid = data.get('userid')
-    friendid = data.get('friendid')
+    userid = data.get('userId')
+    friendid = data.get('friendId')
 
-    db.add_invitation_to_db(userid, friendid)
+    if not db.add_invitation_to_db(userid, friendid):
+        return jsonify(message='Пользователь не найден!'), 400
     return jsonify(message='успешно подписались!'), 200
 
 
